@@ -1,0 +1,3 @@
+[console_scripts]
+epanettools = epanettools.cli:main
+

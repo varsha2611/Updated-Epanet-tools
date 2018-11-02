@@ -1,0 +1,17 @@
+EPANET2 Python calling interface 
+Assela Pathirana
+
+#delete any build files
+swig.exe -python EPANET2.i  (in epanettools directory to create epanet2.py and epanet2_wrap.c)
+python setup.py test
+python -m doctest README.txt -v
+
+#make sure there is a %HOME%\.pypirc file, zest.releaser python package is installed 
+#make sure '* text=auto' is set in .gitattributes file at the root of the repo. 
+fullrelease
+
+
+# developing with wing ide
+1. Make sure proper python env is set in project properties
+2. Make sure to add repo top to pythonpath
+3. Better to remove epanettools from the python being used. 

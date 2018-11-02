@@ -1,0 +1,56 @@
+#########################
+Virtualenv for developing and testing:
+(need to install virtualenvwrapper)
+(see : http://hosseinkaz.blogspot.nl/2012/06/how-to-install-virtualenv.html )
+(need to set VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3 in ~/.bashrc to use python3)
+use set.bash to setup virtualenv as
+. set.bash
+########################
+coverage testing
+coverage run --source epanettools setup.py test
+coverage html  --omit=epanettools/examples/simple/epanet2_test.py 
+open htmlcov/index.html 
+#########################
+Bug in epanet (perhaps new versions have it fixed)
+ case EN_TANKDIAM:
+         v = 0.0;
+         if ( index > Njuncs )
+         {
+-            v = 4.0/PI*sqrt(Tank[index-Njuncs].A)*Ucf[ELEV];      
++            v = sqrt(4.0/PI*Tank[index-Njuncs].A)*Ucf[ELEV];
+         }
+         break;
+
+##########################
+C/C++ part
+edit epanet2.i and pdd.i adf.i
+then run 
+swig -python epanet2.i
+swig -c++ -python pdd.i
+swig -c++ -python adf.i
+
+then run 
+tox # this will do all the testing and doctest. 
+To run only doctest (scenario: editing README.rst)
+- Windows
+.\.tox\py34\Scripts\python.exe -m doctest -v README.rst
+- POSIX
+./.tox/py27/bin/python -m doctest -v README.rst
+(Works only after running tox successfully)
+
+##########################
+flake8 failures:
+try 
+autopep8 --in-place --recursive    --verbose --pep8-passes 5000 <filename>
+
+###########################
+Working with wingide
+(when c parts are changed)
+run python3 setup.py test first
+then test with wingide (with python3)
+
+#########################
+Run a single test on command prompt 
+env PYTHONPATH=src/ python3 -m unittest -q tests.test_ADF
+
+

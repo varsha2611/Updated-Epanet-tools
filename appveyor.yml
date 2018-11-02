@@ -1,0 +1,56 @@
+environment:
+  password:
+    secure: FTXC0Lbagq+isgXzs7VsYFIBJ1axTt2wgwCiwfhouSU=
+  matrix:
+    - PYTHON_VERSION: "2.7"
+      #- PYTHON_VERSION: "3.3"
+    - PYTHON_VERSION: "3.4"
+      #- PYTHON_VERSION: "3.5"
+    - PYTHON_VERSION: "3.6"
+    - PYTHON_VERSION: "3.7"
+
+platform:
+  - x86
+  - x64
+
+matrix:
+  fast_finish: false
+
+install:
+  - set PATH=C:\Miniconda\Scripts
+  - ps: If ($env:Platform -Match "x64") {$env:PATH="C:\Miniconda-x64\Scripts"}
+  - set PATH=%PATH%;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda create -q --name python%PYTHON_VERSION% python=%PYTHON_VERSION% 
+  - activate python%PYTHON_VERSION%
+  - conda install -q --name python%PYTHON_VERSION% setuptools  wheel  nose
+  #- pip install -q mando tstoolbox baker
+  #- python.exe setup.py config_fc
+  - python.exe setup.py config  
+  - python.exe setup.py build 
+  - python.exe setup.py install
+
+build: off
+
+test_script:
+  - nosetests
+
+after_test:
+  # This step builds your wheels.
+  - python.exe setup.py bdist_wheel
+
+artifacts:
+  # bdist_wheel puts your built wheel in the dist directory
+  - path: dist\*.whl
+
+#on_success:
+deploy_script:
+     - "echo [pypi] > %USERPROFILE%\\.pypirc"
+     - "echo username: assela >> %USERPROFILE%\\.pypirc"
+     - "echo password: %password% >> %USERPROFILE%\\.pypirc"
+    # - python setup.py  bdist_wheel upload - this hangs!!
+
+#  You can use this step to upload your artifacts to a public website.
+#  See Appveyor's documentation for more details. Or you can simply
+#  access your wheels from the Appveyor "artifacts" tab for your build.
